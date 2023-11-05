@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 const Footer = () => {
   return (
     <div className="flex items-center w-full p-6 bg-background z-50 dark:bg-[#1F1F1F] ">
-      <div className="hidden md:flex items-center gap-x-2 text-2xl font-bold hover:underline cursor-pointer">
+      <div className="hidden md:flex items-center gap-x-2 text-xl font-bold hover:underline cursor-pointer">
         NotesJunction
       </div>
       <div className="md:ml-auto w-full justify-between md:justify-end flex items-center gap-x-2 text-muted-foreground">
