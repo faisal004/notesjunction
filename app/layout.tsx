@@ -2,7 +2,9 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from '@/components/providers/theme-provider'
-import { ClerkProvider } from '@clerk/nextjs'
+
+import SupabaseProvider from '@/components/providers/supabase-provider'
+import ToastProvider from '@/components/providers/toastprovider'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -31,20 +33,21 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <ClerkProvider>
-      <html lang="en" suppressHydrationWarning>
-        <body className={inter.className}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-            storageKey="notes-key"
-          >
-            {children}
-          </ThemeProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+        <SupabaseProvider>
+          <html lang="en" suppressHydrationWarning>
+            <body className={inter.className}>
+            <ToastProvider/>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+                disableTransitionOnChange
+                storageKey="notes-key"
+              >
+                {children}
+              </ThemeProvider>
+            </body>
+          </html>
+        </SupabaseProvider>
   )
 }

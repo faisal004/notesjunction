@@ -4,12 +4,28 @@ import { ModeToggle } from '@/components/mode-toggle'
 import { Button } from '@/components/ui/button'
 import useScrollTop from '@/hooks/use-scroll-top'
 import { cn } from '@/lib/utils'
-import { UserButton, useAuth, useUser } from '@clerk/nextjs'
+import {
+  SupabaseClient,
+  useSessionContext,
+  useSupabaseClient,
+} from '@supabase/auth-helpers-react'
+
 import Link from 'next/link'
+import toast from 'react-hot-toast'
 
 const Navbar = () => {
   const scrolled = useScrollTop()
-  const { isLoaded, isSignedIn } = useAuth()
+  const { session, error, isLoading } = useSessionContext()
+  const supabase = useSupabaseClient()
+  const handleLogout = async () => {
+    const {error}=await supabase.auth.signOut()
+    if(error){
+      toast.error("Something went wrong")
+    }else{
+      toast.success("Byeee")
+    }
+  }
+
   return (
     <div
       className={cn(
@@ -22,8 +38,10 @@ const Navbar = () => {
       </div>
       <div className="md:ml-auto md:justify-end justify-between w-full flex items-center gap-x-2">
         <ModeToggle />
-        {isSignedIn && isLoaded ? (
-          <UserButton afterSignOutUrl="/" />
+        {session?.user?.aud === 'authenticated' && !isLoading ? (
+          <Button onClick={handleLogout} variant="outline">
+            Log Out
+          </Button>
         ) : (
           <Link href="/sign-in">
             <Button variant="outline">Get Started</Button>
