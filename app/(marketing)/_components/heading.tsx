@@ -14,7 +14,7 @@ const Heading = () => {
         Your Ideas, Documents, & Plans. Unified. Welcome to{' '}
         <span className="underline">NotesJunction</span>
       </h1>
-      <h3 className="text-base sm:text-xl md:text-2xl font-semibold">
+      <h3 className="text-base sm:text-xl md:text-2xl font-semibold pb-6">
         NotesJunction is the connected workspace where <br /> better,faster,work
         happens.
       </h3>
