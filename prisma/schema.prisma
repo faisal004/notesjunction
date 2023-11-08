@@ -1,0 +1,25 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Document {
+  id               Int        @id @default(autoincrement())
+  title            String
+  userId           String
+  isArchived       Boolean
+  parentDocument   Document?  @relation("ChildDocuments", fields: [parentDocumentId], references: [id])
+  content          String?
+  coverImage       String?
+  icon             String?
+  isPublished      Boolean
+  parentDocumentId Int?
+  childDocuments   Document[] @relation("ChildDocuments")
+
+  @@index([userId], name: "by_user")
+  @@index([userId, parentDocumentId], name: "by_user_parent")
+}
