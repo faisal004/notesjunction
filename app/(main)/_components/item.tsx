@@ -2,8 +2,21 @@
 
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
-import { ChevronDown, ChevronRight, Divide, LucideIcon, MoreHorizontal, Trash } from 'lucide-react'
-import { DropdownMenu,DropdownMenuContent,DropdownMenuTrigger,DropdownMenuSeparator, DropdownMenuItem} from "@/components/ui/dropdown-menu"
+import {
+  ChevronDown,
+  ChevronRight,
+  Divide,
+  LucideIcon,
+  MoreHorizontal,
+  Trash,
+} from 'lucide-react'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuItem,
+} from '@/components/ui/dropdown-menu'
 import axios from 'axios'
 import toast from 'react-hot-toast'
 
@@ -32,15 +45,17 @@ export const Item = ({
   onExpand,
   expanded,
 }: itemProps) => {
- // const ChevronIcon = expanded ? ChevronDown : ChevronRight
- const onArchive = async (   event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-  try {
-    await axios.patch('/api/archive', { id: id })
-    toast.success('Archived')
-  } catch (error) {
-    console.log('Error Archiving')
+  // const ChevronIcon = expanded ? ChevronDown : ChevronRight
+  const onArchive = async (
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+  ) => {
+    try {
+      await axios.patch('/api/archive', { id: id })
+      toast.success('Archived')
+    } catch (error) {
+      console.log('Error Archiving')
+    }
   }
-}
   return (
     <div
       onClick={onClick}
@@ -74,11 +89,8 @@ export const Item = ({
       )}
       {!!id && (
         <div className="ml-auto flex items-center gap-x-2">
-  <DropdownMenu>
-            <DropdownMenuTrigger
-              onClick={(e) => e.stopPropagation()}
-              asChild
-            >
+          <DropdownMenu>
+            <DropdownMenuTrigger onClick={(e) => e.stopPropagation()} asChild>
               <div
                 role="button"
                 className="opacity-0 group-hover:opacity-100 h-full ml-auto rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600"
@@ -96,7 +108,6 @@ export const Item = ({
                 <Trash className="h-4 w-4 mr-2" />
                 Delete
               </DropdownMenuItem>
-              
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -108,7 +119,7 @@ Item.Skeleton = function ItemSkeleton({ level }: { level?: number }) {
   return (
     <div
       style={{
-        paddingLeft: level ? `${(level * 12) + 25}px` : "12px"
+        paddingLeft: level ? `${level * 12 + 25}px` : '12px',
       }}
       className="flex gap-x-2 py-[3px]"
     >
