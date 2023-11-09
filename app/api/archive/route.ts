@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server';
 
 
 
-export async function GET(
+export async function PATCH(
     request: Request
 ) {
 
@@ -17,21 +17,32 @@ export async function GET(
             data: { user }
         } = await supabase.auth.getUser();
 
-
+        const { id } = await request.json()
         if (!user) {
             return new NextResponse("Unauthorised", { status: 401 })
         }
         const userId = user?.id
-        const document = await db.document.findMany({
+        const existingDocument = await db.document.findUnique({
             where: {
-                userId: userId,
-                isArchived: false
+                id: id,
             }
-
         });
+        if (!existingDocument) {
+            throw new Error("Not found");
+        }
+        if (existingDocument.userId !== userId) {
+            throw new Error("Unauthorized");
+        }
+        const archiveDocument = await db.document.update({
+            where: {
+                id: id
+            },
+            data: {
+                isArchived: true
+            }
+        })
 
-
-        return NextResponse.json(document);
+        return NextResponse.json(archiveDocument);
     } catch (err: any) {
         console.log(err);
         return new NextResponse('Internal Error', { status: 500 });

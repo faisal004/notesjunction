@@ -1,0 +1,94 @@
+'use client'
+
+import { createClient } from '@supabase/supabase-js'
+import axios from 'axios'
+import { useParams, useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { Spinner } from '@/components/spinner'
+import { Item } from './item'
+import { File, FileIcon, Trash } from 'lucide-react'
+import toast from 'react-hot-toast'
+
+interface DocumentListProps {
+  parentDocumentId?: string
+  level?: number
+  data?: []
+}
+interface DocumentData {
+  id: number
+  title: string
+}
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+)
+
+export const DocumentList = ({
+  parentDocumentId,
+  level = 0,
+}: DocumentListProps) => {
+  const params = useParams()
+  const route = useRouter()
+  const [data, setData] = useState<DocumentData[]>([])
+  const [loading, setIsLoading] = useState(true)
+  ///const [expanded, setExpanded] = useState<Record<string, boolean>>({})
+//   const onExpand = (documentId: string) => {
+//     setExpanded((prevExpanded) => ({
+//       ...prevExpanded,
+//       [documentId]: !prevExpanded[documentId],
+//     }))
+//   }
+ 
+  const fetchDataFromApi = async () => {
+    try {
+      const response = await axios.get('/api/getdocuments')
+      const newdata = response.data
+      setData(newdata)
+
+      setIsLoading(false)
+    } catch (error) {
+      console.error('Error fetching data from the API:', error)
+    }
+  }
+
+  useEffect(() => {
+    fetchDataFromApi()
+    supabase
+      .channel('table-db-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'Document',
+        },
+        (payload) => {
+          fetchDataFromApi()
+        },
+      )
+      .subscribe()
+  }, [])
+ 
+  return (
+    <div>
+      {loading ? (
+        <div className="flex justify-center items-center mt-4">
+          <Spinner size="lg" />
+        </div>
+      ) : (
+        <div className="mt-4 p-2 flex flex-col">
+           {data.map((document) => (
+            <div key={document.id}>
+              <Item
+                id={document.id}
+                label={document.title}
+                icon={FileIcon}
+              />
+            </div>
+          ))}
+        </div>
+      
+      )}
+    </div>
+  )
+}

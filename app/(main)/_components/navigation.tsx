@@ -1,18 +1,56 @@
 import { cn } from '@/lib/utils'
-import { ChevronsLeft, MenuIcon } from 'lucide-react'
+import {
+  ChevronsLeft,
+  MenuIcon,
+  Plus,
+  PlusCircle,
+  Search,
+  Settings,
+  Trash,
+} from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { ElementRef, useEffect, useRef, useState } from 'react'
 import { useMediaQuery } from 'usehooks-ts'
 import UserItem from './user-item'
+import axios from 'axios'
+import { useSessionContext } from '@supabase/auth-helpers-react'
+import { Item } from './item'
+import toast from 'react-hot-toast'
+import { createClient } from '@supabase/supabase-js'
+import { DocumentList } from './document-list'
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
+import TrashBox from './trash-box'
 
 const Navigation = () => {
   const pathname = usePathname()
+  const { session } = useSessionContext()
+
   const isMobile = useMediaQuery('(max-width:768px)')
   const isResizingRef = useRef(false)
   const sidebarRef = useRef<ElementRef<'aside'>>(null)
   const navbarRef = useRef<ElementRef<'div'>>(null)
   const [isResetting, setIsResetting] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(isMobile)
+
+  const onCreate = async () => {
+    try {
+      await axios.post('/api/documents', { title: 'Untitled' })
+
+      toast('New note created', {
+        style: {
+          borderRadius: '10px',
+          background: '#333',
+          color: '#fff',
+        },
+      })
+    } catch (error) {
+      toast.error('Something went wrong')
+    }
+  }
 
   useEffect(() => {
     if (isMobile) {
@@ -26,6 +64,7 @@ const Navigation = () => {
       collapse()
     }
   }, [pathname, isMobile])
+
   const handleMouseDown = (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>,
   ) => {
@@ -81,6 +120,7 @@ const Navigation = () => {
       setTimeout(() => setIsResetting(false), 300)
     }
   }
+
   return (
     <>
       <aside
@@ -102,11 +142,25 @@ const Navigation = () => {
           <ChevronsLeft className="h-6 w-6" />
         </div>
         <div>
-          <UserItem/>
+          <UserItem />
+          <Item label="Settings" icon={Settings} onClick={() => {}} />
+          <Item label="Search" icon={Search} isSearch onClick={() => {}} />
+          <Item onClick={onCreate} label="New Page" icon={PlusCircle} />
         </div>
-        <div className="mt-4">
-          <p>Documents</p>
-        </div>
+
+        <DocumentList />
+        <Item onClick={onCreate} label="New Page" icon={Plus} />
+        <Popover>
+            <PopoverTrigger className="w-full mt-4">
+              <Item label="Trash" icon={Trash} />
+            </PopoverTrigger>
+            <PopoverContent
+              className="p-0 w-72"
+              side={isMobile ? "bottom" : "right"}
+            >
+              <TrashBox />
+            </PopoverContent>
+          </Popover>
         <div
           onMouseDown={handleMouseDown}
           onClick={resetWidth}

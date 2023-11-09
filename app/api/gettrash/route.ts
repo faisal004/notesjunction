@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server';
 
 
 
-export async function POST(
+export async function GET(
     request: Request
 ) {
 
@@ -16,23 +16,25 @@ export async function POST(
         }); const {
             data: { user }
         } = await supabase.auth.getUser();
-        const { title ,parentId} = await request.json()
+
 
         if (!user) {
             return new NextResponse("Unauthorised", { status: 401 })
         }
-        const document = await db.document.create({
-            data: {
-                title: title,
-                parentDocumentId: parentId !== undefined ? parentId : null,
-                userId: user.id,
-                isArchived: false,
-                isPublished: false,
+        const userId = user?.id
+        const documents = await db.document.findMany({
+            where: {
+              userId: userId,
+              isArchived: true,
             },
-        });
+            orderBy: {
+              id: "asc",
+            },
+          });
+          
 
 
-        return NextResponse.json(document);
+        return NextResponse.json(documents);
     } catch (err: any) {
         console.log(err);
         return new NextResponse('Internal Error', { status: 500 });
