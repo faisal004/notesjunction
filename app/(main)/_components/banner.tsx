@@ -20,6 +20,7 @@ export const Banner = ({ documentId }: BannerProps) => {
       toast.success('Restored', {
         position: 'bottom-center',
       })
+      router.push(`/documents/${documentId}`)
     } catch (error) {
       console.log('Error restoring')
     }
@@ -30,6 +31,7 @@ export const Banner = ({ documentId }: BannerProps) => {
       toast.success('Deleted', {
         position: 'bottom-center',
       })
+      router.push("/documents")
     } catch (error) {
       console.log('Error Deleting')
     }
