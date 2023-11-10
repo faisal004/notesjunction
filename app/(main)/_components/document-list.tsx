@@ -70,7 +70,7 @@ export const DocumentList = ({
       )
       .subscribe()
   }, [])
- 
+
   return (
     <div>
       {loading ? (
@@ -86,7 +86,7 @@ export const DocumentList = ({
                 label={document.title}
                 icon={FileIcon}
                 onClick={()=>routeToDcument(document.id)}
-                active={parseInt(params.documentId.toString(),10) === document.id}
+                active={parseInt(params.documentId?.toString(),10) === document.id}
               />
             </div>
           ))}
