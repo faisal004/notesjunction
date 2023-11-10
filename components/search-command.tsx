@@ -79,7 +79,7 @@ useEffect(()=>{
     document.addEventListener('keydown', down)
     return () => document.removeEventListener('keydown', down)
   }, [toggle])
-  console.log(data)
+ 
 
   return (
     <CommandDialog open={isOpen} onOpenChange={onClose}>
