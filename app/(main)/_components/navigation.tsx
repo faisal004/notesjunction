@@ -24,11 +24,14 @@ import {
   PopoverContent,
 } from "@/components/ui/popover";
 import TrashBox from './trash-box'
+import { useSearch } from '@/hooks/use-search'
+import { useSettings } from '@/hooks/use-settings'
 
 const Navigation = () => {
   const pathname = usePathname()
   const { session } = useSessionContext()
-
+const search=useSearch()
+const setting=useSettings()
   const isMobile = useMediaQuery('(max-width:768px)')
   const isResizingRef = useRef(false)
   const sidebarRef = useRef<ElementRef<'aside'>>(null)
@@ -143,8 +146,8 @@ const Navigation = () => {
         </div>
         <div>
           <UserItem />
-          <Item label="Settings" icon={Settings} onClick={() => {}} />
-          <Item label="Search" icon={Search} isSearch onClick={() => {}} />
+          <Item label="Settings" icon={Settings} onClick={setting.onOpen} />
+          <Item label="Search" icon={Search} isSearch onClick={search.onOpen} />
           <Item onClick={onCreate} label="New Page" icon={PlusCircle} />
         </div>
 

@@ -5,6 +5,7 @@ import { ThemeProvider } from '@/components/providers/theme-provider'
 
 import SupabaseProvider from '@/components/providers/supabase-provider'
 import ToastProvider from '@/components/providers/toastprovider'
+import { ModalProvider } from '@/components/providers/moda-provider'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -44,6 +45,7 @@ export default function RootLayout({
                 disableTransitionOnChange
                 storageKey="notes-key"
               >
+                <ModalProvider/>
                 {children}
               </ThemeProvider>
             </body>

@@ -28,7 +28,7 @@ export const DocumentList = ({
   level = 0,
 }: DocumentListProps) => {
   const params = useParams()
-  const route = useRouter()
+  const router = useRouter()
   const [data, setData] = useState<DocumentData[]>([])
   const [loading, setIsLoading] = useState(true)
   ///const [expanded, setExpanded] = useState<Record<string, boolean>>({})
@@ -38,7 +38,9 @@ export const DocumentList = ({
 //       [documentId]: !prevExpanded[documentId],
 //     }))
 //   }
- 
+ const routeToDcument=(documentId:number)=>{
+  router.push(`/documents/${documentId}`)
+ }
   const fetchDataFromApi = async () => {
     try {
       const response = await axios.get('/api/getdocuments')
@@ -83,6 +85,8 @@ export const DocumentList = ({
                 id={document.id}
                 label={document.title}
                 icon={FileIcon}
+                onClick={()=>routeToDcument(document.id)}
+                active={parseInt(params.documentId.toString(),10) === document.id}
               />
             </div>
           ))}
