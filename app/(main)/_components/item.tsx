@@ -51,7 +51,9 @@ export const Item = ({
   ) => {
     try {
       await axios.patch('/api/archive', { id: id })
-      toast.success('Archived')
+      toast.success('Archived',{
+        position:"bottom-center"
+      })
     } catch (error) {
       console.log('Error Archiving')
     }

@@ -45,7 +45,9 @@ const TrashBox = () => {
   const onRestore = async(id:number) => {
     try {
         await axios.patch("/api/restore",{id:id})
-        toast.success("Restored")
+        toast.success("Restored",{
+          position:"bottom-center"
+        })
         
     } catch (error) {
         console.log("Error restoring")
@@ -55,7 +57,9 @@ const TrashBox = () => {
   const onRemove = async(id:number) => {
     try {
         await axios.delete(`/api/remove/${id}`)
-        toast.success("Deleted")
+        toast.success("Deleted",{
+          position:"bottom-center"
+        })
         
     } catch (error) {
         console.log("Error Deleting")
@@ -63,6 +67,9 @@ const TrashBox = () => {
        
         
     }
+  }
+  const routetopage=(documentId:number)=>{
+    router.push(`/documents/${documentId}`)
   }
   useEffect(() => {
     fetchDataFromApi()
@@ -107,7 +114,7 @@ const TrashBox = () => {
               <div
                 key={document.id}
                 role="button"
-                onClick={()=>{}}
+                onClick={()=>routetopage(document.id)}
                 className="text-sm rounded-sm w-full hover:bg-primary/5 flex items-center text-primary justify-between"
               >
                 <span>{document.title}</span>
