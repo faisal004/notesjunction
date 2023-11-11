@@ -6,17 +6,21 @@ import { useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 interface TitleProps {
-  initialData: string
-  second: string
+  initialData: {
+    title:string ,
+    icon:string
+
+  }
+  
 }
 
-const Title = ({ initialData, second }: TitleProps) => {
+const Title = ({ initialData }: TitleProps) => {
   const params = useParams()
   const inputRef = useRef<HTMLInputElement>(null)
   const [isEditing, setIsEditing] = useState(false)
-  const [title, setTitle] = useState(initialData || 'Untitled')
+  const [title, setTitle] = useState(initialData?.title || 'Untitled')
   const enableInput = () => {
-    setTitle(initialData)
+    setTitle(initialData?.title)
     setIsEditing(true)
     setTimeout(() => {
       inputRef.current?.focus()
@@ -57,7 +61,7 @@ const Title = ({ initialData, second }: TitleProps) => {
 
   return (
     <div className="flex items-center gap-x-1">
-      {!!second && <p>{second}</p>}
+      {!!initialData?.icon && <p>{initialData?.icon}</p>}
       {isEditing ? (
         <Input
           value={title}
@@ -76,7 +80,7 @@ const Title = ({ initialData, second }: TitleProps) => {
           size="sm"
           className="font-normal h-auto p-1"
         >
-          <span className="truncate">{initialData}</span>
+          <span className="truncate">{initialData.title}</span>
         </Button>
       )}
     </div>
