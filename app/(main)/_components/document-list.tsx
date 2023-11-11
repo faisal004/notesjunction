@@ -17,6 +17,7 @@ interface DocumentListProps {
 interface DocumentData {
   id: number
   title: string
+  icon:string
 }
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -85,6 +86,7 @@ export const DocumentList = ({
                 id={document.id}
                 label={document.title}
                 icon={FileIcon}
+                documentIcon={document.icon}
                 onClick={()=>routeToDcument(document.id)}
                 active={parseInt(params.documentId?.toString(),10) === document.id}
               />
