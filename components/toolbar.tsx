@@ -8,6 +8,7 @@ import axios from 'axios'
 import { useParams } from 'next/navigation'
 import TextareaAutosize from 'react-textarea-autosize'
 import toast from 'react-hot-toast'
+import { useCoverImage } from '@/hooks/use-cover-image'
 
 interface ToolbarProps {
   initialData: {
@@ -21,6 +22,7 @@ interface ToolbarProps {
 
 const Toolbar = ({ initialData, preview }: ToolbarProps) => {
   const inputRef = useRef<ElementRef<'textarea'>>(null)
+  const coverImage=useCoverImage()
   const params = useParams()
   const [isEditing, setIsEditing] = useState(false)
   const [value, setValue] = useState(initialData?.title)
@@ -121,7 +123,7 @@ const Toolbar = ({ initialData, preview }: ToolbarProps) => {
         )}
         {!initialData?.coverImage && !preview && (
           <Button
-            onClick={() => {}}
+            onClick={coverImage.onOpen}
             className="text-muted-foreground text-xs"
             variant="outline"
             size="sm"

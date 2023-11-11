@@ -6,6 +6,7 @@ import { ThemeProvider } from '@/components/providers/theme-provider'
 import SupabaseProvider from '@/components/providers/supabase-provider'
 import ToastProvider from '@/components/providers/toastprovider'
 import { ModalProvider } from '@/components/providers/moda-provider'
+import { EdgeStoreProvider } from '../lib/edgestore'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -34,22 +35,25 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-        <SupabaseProvider>
-          <html lang="en" suppressHydrationWarning>
-            <body className={inter.className}>
-            <ToastProvider/>
-              <ThemeProvider
-                attribute="class"
-                defaultTheme="system"
-                enableSystem
-                disableTransitionOnChange
-                storageKey="notes-key"
-              >
-                <ModalProvider/>
-                {children}
-              </ThemeProvider>
-            </body>
-          </html>
-        </SupabaseProvider>
+    <SupabaseProvider>
+      <html lang="en" suppressHydrationWarning>
+        <body className={inter.className}>
+          <ToastProvider />
+          <EdgeStoreProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+              storageKey="notes-key"
+            >
+              <ModalProvider />
+
+              {children}
+            </ThemeProvider>
+          </EdgeStoreProvider>
+        </body>
+      </html>
+    </SupabaseProvider>
   )
 }
