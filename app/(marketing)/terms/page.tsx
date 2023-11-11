@@ -40,7 +40,7 @@ const TermsAndConditions = () => {
 
       <h2 className="text-2xl font-bold mt-8 mb-4">Contact Us</h2>
       <p>
-        If you have questions or concerns about these Terms and Conditions, please contact us at [your contact email].
+        If you have questions or concerns about these Terms and Conditions, please contact us at faisalhusain1320@gmail.com.
       </p>
     </div>
   );
