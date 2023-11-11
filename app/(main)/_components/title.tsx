@@ -44,7 +44,7 @@ const Title = ({ initialData }: TitleProps) => {
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value)
 
-    console.log(event.target.value)
+   
   }
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
