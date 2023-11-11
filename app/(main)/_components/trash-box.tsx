@@ -39,9 +39,7 @@ const TrashBox = () => {
       return document.title.toLowerCase().includes(search.toLowerCase())
     })
   }, [data, search])
-  const onClick = (documentId: string) => {
-    router.push(`/documents/${documentId}`)
-  }
+ 
   const onRestore = async(id:number) => {
     try {
         await axios.patch("/api/restore",{id:id})

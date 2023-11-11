@@ -7,6 +7,7 @@ import Title from './title'
 import { createClient } from '@supabase/supabase-js'
 import { Banner } from './banner'
 import { Menu } from './menu'
+import Publish from './publish'
 
 interface NavbarProps {
   isCollapsed: boolean
@@ -80,6 +81,7 @@ const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
         <div className="flex items-center justify-between w-full">
           <Title initialData={data} />
           <div className="flex items-center gap-x-2">
+            <Publish initialData={data}/>
             <Menu documentId={data?.id} />
           </div>
         </div>

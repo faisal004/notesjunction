@@ -2,6 +2,7 @@
 
 import { Cover } from '@/components/cover'
 import Editor from '@/components/editor'
+import { Spinner } from '@/components/spinner'
 import Toolbar from '@/components/toolbar'
 import { useDebounce } from '@/hooks/use-debounce'
 import { createClient } from '@supabase/supabase-js'
@@ -23,10 +24,9 @@ const DocumentPage = ({ params }: DocumentIdPageProps) => {
   const [loading, setLoading] = useState(true)
   const [content, setContent] = useState<string | undefined>(data?.content);
   const debouncedContent = useDebounce(content, 500); 
-  
   const fetchData = async () => {
     try {
-      const req = await axios.get(`/api/getdocuments/${params.documentId}`)
+      const req = await axios.get(`/api/getPublished/${params.documentId}`)
       const newData = req.data
       setData(newData)
       setLoading(false)
@@ -34,23 +34,8 @@ const DocumentPage = ({ params }: DocumentIdPageProps) => {
       console.error('Error fetching data:', error)
     }
   }
-  const onChange = (newContent: string) => {
-    setContent(newContent);
-  };
-  useEffect(() => {
-    const saveContent = async () => {
-      try {
-        await axios.patch(`/api/getdocuments/${params.documentId}/addcontent`, {
-          content: debouncedContent,
-        });
-      } catch (error) {
-        console.log("Error adding content");
-      }
-    };
-
-    saveContent();
-  }, [debouncedContent, params.documentId]);
-
+ 
+ 
   useEffect(() => {
     fetchData()
     const subscription = supabase
@@ -71,18 +56,24 @@ const DocumentPage = ({ params }: DocumentIdPageProps) => {
       subscription.unsubscribe()
     }
   }, [params.documentId])
-  
+ 
+  if(data===null){
+    return <div className=' items-center flex justify-center h-full'>
+        This page was Unpublished by Owner
+    </div>
+ }
   return (
     <>
       {loading ? (
-        'Loading'
+       <div className=' items-center flex justify-center h-full'><Spinner size="lg"/></div>
       ) : (
         <div className="pb-40">
-          <Cover url={data?.coverImage}/>
+          <Cover preview url={data?.coverImage}/>
           <div className="md:max-w-3xl lg:max-w-4xl mx-auto">
-            <Toolbar initialData={data} />
+            <Toolbar preview initialData={data} />
             <Editor
-            onChange={onChange}
+            editable={false}
+            onChange={()=>{}}
             initialContent={data?.content}
             />
           </div>
