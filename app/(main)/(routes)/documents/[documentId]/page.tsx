@@ -1,7 +1,9 @@
 'use client'
 
 import { Cover } from '@/components/cover'
+import Editor from '@/components/editor'
 import Toolbar from '@/components/toolbar'
+import { useDebounce } from '@/hooks/use-debounce'
 import { createClient } from '@supabase/supabase-js'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
@@ -19,6 +21,8 @@ const supabase = createClient(
 const DocumentPage = ({ params }: DocumentIdPageProps) => {
   const [data, setData] = useState<any>()
   const [loading, setLoading] = useState(true)
+  const [content, setContent] = useState<string | undefined>(data?.content);
+  const debouncedContent = useDebounce(content, 500); 
   console.log(params.documentId)
   const fetchData = async () => {
     try {
@@ -30,6 +34,22 @@ const DocumentPage = ({ params }: DocumentIdPageProps) => {
       console.error('Error fetching data:', error)
     }
   }
+  const onChange = (newContent: string) => {
+    setContent(newContent);
+  };
+  useEffect(() => {
+    const saveContent = async () => {
+      try {
+        await axios.patch(`/api/getdocuments/${params.documentId}/addcontent`, {
+          content: debouncedContent,
+        });
+      } catch (error) {
+        console.log("Error adding content");
+      }
+    };
+
+    saveContent();
+  }, [debouncedContent, params.documentId]);
 
   useEffect(() => {
     fetchData()
@@ -61,6 +81,10 @@ const DocumentPage = ({ params }: DocumentIdPageProps) => {
           <Cover url={data?.coverImage}/>
           <div className="md:max-w-3xl lg:max-w-4xl mx-auto">
             <Toolbar initialData={data} />
+            <Editor
+            onChange={onChange}
+            initialContent={data?.content}
+            />
           </div>
         </div>
       )}

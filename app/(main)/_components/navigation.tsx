@@ -46,12 +46,11 @@ const Navigation = () => {
       await axios.post('/api/documents', { title: 'Untitled' })
 
       toast.success('New note created', {
-        position: "bottom-center",
+        position: 'bottom-center',
         style: {
           borderRadius: '10px',
           background: '#333',
           color: '#fff',
-          
         },
       })
     } catch (error) {
@@ -183,10 +182,7 @@ const Navigation = () => {
         )}
       >
         {!!params.documentId ? (
-          <Navbar
-          isCollapsed={isCollapsed}
-          onResetWidth={resetWidth}
-          />
+          <Navbar isCollapsed={isCollapsed} onResetWidth={resetWidth} />
         ) : (
           <nav className="bg-transparent px-3 py-2 w-full">
             {isCollapsed && (
