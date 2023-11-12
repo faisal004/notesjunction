@@ -36,18 +36,17 @@ const Toolbar = ({ initialData, preview }: ToolbarProps) => {
   }
   const disableInput = () => {
     setIsEditing(false)
-    console.log('Updated title:', value)
-    console.log('Document ID:', params.documentId)
+    
     if (params.documentId) {
       axios
         .patch(`/api/getdocuments/${params.documentId}/updatetitle`, {
           title: value,
         })
         .then((response) => {
-          console.log('Title updated successfully:', response.data)
+          console.log('Title updated successfully')
         })
         .catch((error) => {
-          console.error('Error updating title:', error)
+          console.error('Error updating title:')
         })
     }
   }

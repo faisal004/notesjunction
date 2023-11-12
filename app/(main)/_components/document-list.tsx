@@ -8,6 +8,7 @@ import { Spinner } from '@/components/spinner'
 import { Item } from './item'
 import { File, FileIcon, Trash } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { useSession, useSessionContext } from '@supabase/auth-helpers-react'
 
 interface DocumentListProps {
   parentDocumentId?: string
@@ -30,8 +31,10 @@ export const DocumentList = ({
 }: DocumentListProps) => {
   const params = useParams()
   const router = useRouter()
+  const {session}= useSessionContext()
   const [data, setData] = useState<DocumentData[]>([])
   const [loading, setIsLoading] = useState(true)
+ 
   ///const [expanded, setExpanded] = useState<Record<string, boolean>>({})
 //   const onExpand = (documentId: string) => {
 //     setExpanded((prevExpanded) => ({
@@ -42,18 +45,25 @@ export const DocumentList = ({
  const routeToDcument=(documentId:number)=>{
   router.push(`/documents/${documentId}`)
  }
+ 
   const fetchDataFromApi = async () => {
     try {
-      const response = await axios.get('/api/getdocuments')
-      const newdata = response.data
-      setData(newdata)
+      const { data: newdata, error } = await supabase
+        .from('Document') 
+        .select('*')
+        .eq("userId",session?.user?.id)
+        .eq("isArchived",false)
 
-      setIsLoading(false)
+      if (error) {
+        throw error;
+      }
+
+      setData(newdata ?? []);
+      setIsLoading(false);
     } catch (error) {
-      console.error('Error fetching data from the API:', error)
+      console.error('Error fetching data from Supabase:', error);
     }
   }
-
   useEffect(() => {
     fetchDataFromApi()
     supabase
@@ -71,9 +81,8 @@ export const DocumentList = ({
       )
       .subscribe()
   }, [])
-if(data===null){
-  return <div></div>
-}
+
+  
   return (
     <div>
       {loading ? (

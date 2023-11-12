@@ -1,12 +1,13 @@
 'use client'
 
 import { Cover } from '@/components/cover'
-import Editor from '@/components/editor'
 import Toolbar from '@/components/toolbar'
 import { useDebounce } from '@/hooks/use-debounce'
 import { createClient } from '@supabase/supabase-js'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
+import dynamic from 'next/dynamic'
+import { useMemo } from 'react'
 
 interface DocumentIdPageProps {
   params: {
@@ -23,7 +24,7 @@ const DocumentPage = ({ params }: DocumentIdPageProps) => {
   const [loading, setLoading] = useState(true)
   const [content, setContent] = useState<string | undefined>(data?.content);
   const debouncedContent = useDebounce(content, 500); 
-  
+  const Editor = useMemo(() => dynamic(() => import("@/components/editor"), { ssr: false }) ,[]);  
   const fetchData = async () => {
     try {
       const req = await axios.get(`/api/getdocuments/${params.documentId}`)
