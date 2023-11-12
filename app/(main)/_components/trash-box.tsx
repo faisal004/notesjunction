@@ -1,6 +1,7 @@
 import { ConfirmModal } from '@/components/modals/confirm-modal'
 import { Spinner } from '@/components/spinner'
 import { Input } from '@/components/ui/input'
+import { useSessionContext } from '@supabase/auth-helpers-react'
 import { createClient } from '@supabase/supabase-js'
 import axios from 'axios'
 import { Search, Trash, Undo } from 'lucide-react'
@@ -11,6 +12,7 @@ import toast from 'react-hot-toast'
 interface DocumentData {
   id: number
   title: string
+  isArchived: boolean
 }
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -19,54 +21,67 @@ const supabase = createClient(
 const TrashBox = () => {
   const router = useRouter()
   const params = useParams()
+  const { session } = useSessionContext()
   const [search, setSearch] = useState('')
   const [data, setData] = useState<DocumentData[]>([])
   const [loading, setIsLoading] = useState(true)
   const fetchDataFromApi = async () => {
     try {
-      const response = await axios.get('/api/gettrash')
-      const newdata = response.data
-      setData(newdata)
+      const { data: newdata, error } = await supabase
+        .from('Document')
+        .select('*')
+        .eq('userId', session?.user?.id)
+        .eq('isArchived', true)
 
+      if (error) {
+        throw error
+      }
+
+      setData(newdata ?? [])
       setIsLoading(false)
     } catch (error) {
-      console.error('Error fetching data from the API:', error)
+      console.error('Error fetching data from Supabase:', error)
     }
   }
-
   const filteredData = useMemo(() => {
     return data?.filter((document) => {
       return document.title.toLowerCase().includes(search.toLowerCase())
     })
   }, [data, search])
- 
-  const onRestore = async(id:number) => {
+
+  const onRestore = async (id: number) => {
     try {
-        await axios.patch("/api/restore",{id:id})
-        toast.success("Restored",{
-          position:"bottom-center"
-        })
-        
-    } catch (error) {
-        console.log("Error restoring")
-        
+      const { error } = await supabase
+        .from('Document')
+        .update({ isArchived: false })
+        .eq('id', id)
+
+      if (error) {
+        throw error
+      }
+      toast.success('Restored', {
+        position: 'bottom-center',
+      })
+    } catch (error:any) {
+      console.error('Error restoring:', error.message)
     }
   }
-  const onRemove = async(id:number) => {
+
+  const onRemove = async (id: number) => {
     try {
-        await axios.delete(`/api/remove/${id}`)
-        toast.success("Deleted",{
-          position:"bottom-center"
-        })
-        
+      const { error } = await supabase.from('Document').delete().eq('id', id)
+
+      if (error) {
+        throw error
+      }
+      toast.success('Deleted', {
+        position: 'bottom-center',
+      })
     } catch (error) {
-        console.log("Error Deleting")
-        
-       
-        
+      console.log('Error Deleting')
     }
   }
-  const routetopage=(documentId:number)=>{
+  const routetopage = (documentId: number) => {
     router.push(`/documents/${documentId}`)
   }
   useEffect(() => {
@@ -112,7 +127,7 @@ const TrashBox = () => {
               <div
                 key={document.id}
                 role="button"
-                onClick={()=>routetopage(document.id)}
+                onClick={() => routetopage(document.id)}
                 className="text-sm rounded-sm w-full hover:bg-primary/5 flex items-center text-primary justify-between"
               >
                 <span>{document.title}</span>
@@ -125,14 +140,12 @@ const TrashBox = () => {
                     <Undo className="h-4 w-4 text-muted-foreground" />
                   </div>
                   <ConfirmModal onConfirm={() => onRemove(document.id)}>
-
-                  
-                  <div
-                    role="button"
-                    className="rounded-sm p-2 hover:bg-neutral-200"
-                  >
-                    <Trash className="h-4 w-4 text-muted-foreground" />
-                  </div>
+                    <div
+                      role="button"
+                      className="rounded-sm p-2 hover:bg-neutral-200"
+                    >
+                      <Trash className="h-4 w-4 text-muted-foreground" />
+                    </div>
                   </ConfirmModal>
                 </div>
               </div>
