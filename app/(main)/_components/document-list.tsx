@@ -71,7 +71,9 @@ export const DocumentList = ({
       )
       .subscribe()
   }, [])
-
+if(data===null){
+  return <div></div>
+}
   return (
     <div>
       {loading ? (
