@@ -11,12 +11,17 @@ import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { Button } from '@/components/ui/button'
 import { Check, Copy, Globe } from 'lucide-react'
+import { createClient } from '@supabase/supabase-js'
 interface PublishProps {
   initialData: {
     id: string
     isPublished: boolean
   }
 }
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+)
 const Publish = ({ initialData }: PublishProps) => {
   const origin = useOrigin()
   const params = useParams()
@@ -26,7 +31,10 @@ const Publish = ({ initialData }: PublishProps) => {
   const onPublish = async () => {
     try {
       setIsSubmitting(true)
-      axios.patch(`/api/getdocuments/${params.documentId}/publish`)
+      const {error}= await supabase.from('Document').update({isPublished:true}).eq("id",params?.documentId)
+      if(error){
+        throw error
+      }
       setIsSubmitting(false)
       toast.success('Published', {
         position: 'bottom-center',
@@ -38,7 +46,10 @@ const Publish = ({ initialData }: PublishProps) => {
   const unPublish = async () => {
     try {
       setIsSubmitting(true)
-      axios.patch(`/api/getdocuments/${params.documentId}/unpublish`)
+      const {error}= await supabase.from('Document').update({isPublished:false}).eq("id",params?.documentId)
+      if(error){
+        throw error
+      }
       setIsSubmitting(false)
       toast.success('Unpublished', {
         position: 'bottom-center',
