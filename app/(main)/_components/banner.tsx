@@ -6,32 +6,47 @@ import { Button } from '@/components/ui/button'
 import { ConfirmModal } from '@/components/modals/confirm-modal'
 import axios from 'axios'
 import toast from 'react-hot-toast'
+import { createClient } from '@supabase/supabase-js'
 
 interface BannerProps {
   documentId: number
 }
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+)
 
 export const Banner = ({ documentId }: BannerProps) => {
   const router = useRouter()
 
   const onRestore = async () => {
     try {
-      await axios.patch('/api/restore', { id: documentId })
+      const { error } = await supabase
+        .from('Document')
+        .update({ isArchived: false })
+        .eq('id', documentId)
+
+      if (error) {
+        
+        throw error
+      }
       toast.success('Restored', {
         position: 'bottom-center',
       })
-      router.push(`/documents/${documentId}`)
-    } catch (error) {
-      console.log('Error restoring')
+    } catch (error:any) {
+      console.error('Error restoring:', error.message)
     }
   }
   const onRemove = async () => {
     try {
-      await axios.delete(`/api/remove/${documentId}`)
+      const { error } = await supabase.from('Document').delete().eq('id', documentId)
+
+      if (error) {
+        throw error
+      }
       toast.success('Deleted', {
         position: 'bottom-center',
       })
-      router.push("/documents")
     } catch (error) {
       console.log('Error Deleting')
     }
