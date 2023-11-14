@@ -14,6 +14,7 @@ import { useSearch } from '@/hooks/use-search'
 import axios from 'axios'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@supabase/supabase-js'
+import { useSessionContext } from '@supabase/auth-helpers-react'
 interface DocumentData {
   id: number
   title: string
@@ -28,19 +29,27 @@ export const SearchCommand = () => {
   const [isMounted, setIsMounted] = useState(false)
   const toggle = useSearch((store) => store.toggle)
   const isOpen = useSearch((store) => store.isOpen)
+  const {session}= useSessionContext()
+
   const onClose = useSearch((store) => store.onClose)
   const [data, setData] = useState<DocumentData[]>([])
   const router = useRouter()
 
   const documentsfromAPI = async () => {
     try {
-      const req = await axios.get('/api/getdocuments')
-      const newData = req.data
-      
-      setData(newData)
-    
+      const { data: newdata, error } = await supabase
+        .from('Document') 
+        .select('*')
+        .eq("userId",session?.user?.id)
+        .eq("isArchived",false)
+
+      if (error) {
+        throw error;
+      }
+
+      setData(newdata ?? []);
     } catch (error) {
-      console.log('Error fetch data')
+      console.error('Error fetching data from Supabase:', error);
     }
   }
   const onSelect = (id: number) => {
