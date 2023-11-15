@@ -76,7 +76,7 @@ const DocumentPage = ({ params }: DocumentIdPageProps) => {
   return (
     <>
       {loading ? (
-        'Loading'
+        'Loading......'
       ) : (
         <div className="pb-40">
           <Cover url={data?.coverImage}/>
