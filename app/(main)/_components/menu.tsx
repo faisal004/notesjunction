@@ -14,24 +14,35 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import axios from 'axios'
 import toast from 'react-hot-toast'
+import { createClient } from '@supabase/supabase-js'
 
 interface MenuProps {
   documentId: number
 }
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+)
 
 export const Menu = ({ documentId }: MenuProps) => {
   const router = useRouter()
 
   const onArchive = async () => {
     try {
-      await axios.patch('/api/archive', { id: documentId })
+      const { error } = await supabase
+        .from('Document')
+        .update({ isArchived: true })
+        .eq('id', documentId)
+
+      if (error) {
+        throw error
+      }
       toast.success('Archived', {
         position: 'bottom-center',
       })
-    } catch (error) {
-      console.log('Error Archiving')
+    } catch (error:any) {
+      console.error('Error restoring:', error.message)
     }
 
     router.push('/documents')

@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import axios from 'axios'
 import toast from 'react-hot-toast'
+import { createClient } from '@supabase/supabase-js'
 
 interface itemProps {
   id?: number
@@ -32,6 +33,10 @@ interface itemProps {
   label?: string
   icon: LucideIcon
 }
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+)
 
 export const Item = ({
   id,
@@ -50,12 +55,19 @@ export const Item = ({
     event: React.MouseEvent<HTMLDivElement, MouseEvent>,
   ) => {
     try {
-      await axios.patch('/api/archive', { id: id })
-      toast.success('Archived',{
-        position:"bottom-center"
+      const { error } = await supabase
+        .from('Document')
+        .update({ isArchived: true })
+        .eq('id', id)
+
+      if (error) {
+        throw error
+      }
+      toast.success('Archived', {
+        position: 'bottom-center',
       })
-    } catch (error) {
-      console.log('Error Archiving')
+    } catch (error:any) {
+      console.error('Error restoring:', error.message)
     }
   }
   return (
